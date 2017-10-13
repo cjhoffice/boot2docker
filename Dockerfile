@@ -1,5 +1,12 @@
 FROM debian:jessie
 
+# 使用163的yum镜像源
+RUN mv /etc/apt/sources.list /etc/apt/sources.list.bak && \
+    echo "deb http://mirrors.163.com/debian/ jessie main non-free contrib" >/etc/apt/sources.list && \
+    echo "deb http://mirrors.163.com/debian/ jessie-proposed-updates main non-free contrib" >>/etc/apt/sources.list && \
+    echo "deb-src http://mirrors.163.com/debian/ jessie main non-free contrib" >>/etc/apt/sources.list && \
+    echo "deb-src http://mirrors.163.com/debian/ jessie-proposed-updates main non-free contrib" >>/etc/apt/sources.list
+
 RUN apt-get update && apt-get -y install  unzip \
                         xz-utils \
                         curl \
@@ -23,7 +30,8 @@ RUN apt-get update && apt-get -y install  unzip \
 ENV KERNEL_VERSION  4.4.59
 
 # Fetch the kernel sources
-RUN curl --retry 10 https://www.kernel.org/pub/linux/kernel/v${KERNEL_VERSION%%.*}.x/linux-$KERNEL_VERSION.tar.xz | tar -C / -xJ && \
+# https://www.kernel.org/pub/linux/kernel/ => https://mirror.tuna.tsinghua.edu.cn/kernel/
+RUN curl --retry 10 https://mirror.tuna.tsinghua.edu.cn/kernel/v${KERNEL_VERSION%%.*}.x/linux-$KERNEL_VERSION.tar.xz | tar -C / -xJ && \
     mv /linux-$KERNEL_VERSION /linux-kernel
 
 # http://aufs.sourceforge.net/
